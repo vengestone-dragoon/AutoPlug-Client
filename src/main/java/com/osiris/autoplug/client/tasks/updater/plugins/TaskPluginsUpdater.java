@@ -209,17 +209,17 @@ public class TaskPluginsUpdater extends BThread {
                 }
 
                 // Update the detailed plugins in-memory values
-                installedPlugin.setSpigotId(spigotId.asInt());
-                installedPlugin.setBukkitId(bukkitId.asInt());
-                installedPlugin.setIgnoreContentType(ignoreContentType.asBoolean());
-                installedPlugin.setCustomDownloadURL(customDownloadURL.asString());
-                installedPlugin.setCustomCheckURL(customCheckURL.asString());
-                installedPlugin.setGithubRepoName(githubRepoName.asString());
-                installedPlugin.setGithubAssetName(githubAssetName.asString());
-                installedPlugin.setJenkinsProjectUrl(jenkinsProjectUrl.asString());
-                installedPlugin.setJenkinsArtifactName(jenkinsArtifactName.asString());
-                installedPlugin.setJenkinsBuildId(jenkinsBuildId.asInt());
-                installedPlugin.setModrinthId(modrinthId.asString());
+                installedPlugin.spigotId = spigotId.asInt();
+                installedPlugin.bukkitId = bukkitId.asInt();
+                installedPlugin.ignoreContentType = ignoreContentType.asBoolean();
+                installedPlugin.customDownloadURL = customDownloadURL.asString();
+                installedPlugin.customCheckURL = customCheckURL.asString();
+                installedPlugin.githubRepoName = githubRepoName.asString();
+                installedPlugin.githubAssetName = githubAssetName.asString();
+                installedPlugin.jenkinsProjectUrl = jenkinsProjectUrl.asString();
+                installedPlugin.jenkinsArtifactName = jenkinsArtifactName.asString();
+                installedPlugin.jenkinsBuildId = jenkinsBuildId.asInt();
+                installedPlugin.modrinthId = modrinthId.asString();
                 installedPlugin.forceUpdate = forceUpdate.asBoolean();
 
                 // Check for missing plugin details in plugin.yml
@@ -308,26 +308,26 @@ public class TaskPluginsUpdater extends BThread {
                 if (pl.customCheckURL != null) { // Custom Check
                     sizeCustomPlugins++;
                     activeFutures.add(executorService.submit(() -> new ResourceFinder().findByCustomCheckURL(pl)));
-                } else if (pl.getJenkinsProjectUrl() != null) { // JENKINS PLUGIN
+                } else if (pl.jenkinsProjectUrl != null) { // JENKINS PLUGIN
                     sizeJenkinsPlugins++;
                     activeFutures.add(executorService.submit(() -> new ResourceFinder().findByJenkinsUrl(pl)));
-                } else if (pl.getGithubRepoName() != null) { // GITHUB PLUGIN
+                } else if (pl.githubRepoName != null) { // GITHUB PLUGIN
                     sizeGithubPlugins++;
                     activeFutures.add(executorService.submit(() -> new ResourceFinder().findByGithubUrl(pl)));
-                } else if (pl.getSpigotId() != 0) {
+                } else if (pl.spigotId != 0) {
                     sizeSpigotPlugins++; // SPIGOT PLUGIN
                     activeFutures.add(executorService.submit(() -> new ResourceFinder().findPluginBySpigotId(pl)));
-                } else if (pl.getBukkitId() != 0) {
+                } else if (pl.bukkitId != 0) {
                     sizeBukkitPlugins++; // BUKKIT PLUGIN
-                    pl.setIgnoreContentType(true); // TODO temporary workaround for xamazon-json content type curseforge/bukkit issue: https://github.com/Osiris-Team/AutoPlug-Client/issues/109
+                    pl.ignoreContentType = true; // TODO temporary workaround for xamazon-json content type curseforge/bukkit issue: https://github.com/Osiris-Team/AutoPlug-Client/issues/109
                     activeFutures.add(executorService.submit(() -> new ResourceFinder().findPluginByBukkitId(pl)));
-                } else if (pl.getModrinthId() != null) { // MODRINTH PLUGIN
+                } else if (pl.modrinthId != null) { // MODRINTH PLUGIN
                     sizeModrinthPlugins++;
                     String finalMcVersion = mcVersion;
                     activeFutures.add(executorService.submit(() -> new ResourceFinder().findPluginByModrinthId(pl, finalMcVersion)));
                 } else {
                     sizeUnknownPlugins++; // UNKNOWN PLUGIN
-                    pl.setIgnoreContentType(true); // TODO temporary workaround for xamazon-json content type curseforge/bukkit issue: https://github.com/Osiris-Team/AutoPlug-Client/issues/109
+                    pl.ignoreContentType = true; // TODO temporary workaround for xamazon-json content type curseforge/bukkit issue: https://github.com/Osiris-Team/AutoPlug-Client/issues/109
                     activeFutures.add(executorService.submit(() -> new ResourceFinder().findUnknownSpigotPlugin(pl)));
                 }
             } catch (Exception e) {
@@ -486,7 +486,7 @@ public class TaskPluginsUpdater extends BThread {
         String downloadUrl = result.getDownloadUrl(); // The download url for the latest version
         String resultSpigotId = result.getSpigotId();
         String resultBukkitId = result.getBukkitId();
-        if (pl.getCustomDownloadURL() != null) downloadUrl = pl.getCustomDownloadURL();
+        if (pl.customDownloadURL != null) downloadUrl = pl.customDownloadURL;
 
         if (pl.forceUpdate && code == SearchResult.Type.UP_TO_DATE)
             code = SearchResult.Type.UPDATE_AVAILABLE;
